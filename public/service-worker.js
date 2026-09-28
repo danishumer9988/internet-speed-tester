@@ -1,4 +1,4 @@
-const CACHE_NAME = 'speedtest-v5';
+const CACHE_NAME = 'speedtest-v6';
 const ASSETS = [
   '/',
   '/index.html',

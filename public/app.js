@@ -6,14 +6,12 @@ const PING_COUNT = 10;
 const CF_DOWN = 'https://speed.cloudflare.com/__down?bytes=';
 const CF_UP   = 'https://speed.cloudflare.com/__up';
 
-// Test phase parameters
 const TEST_DURATION_MS = 12000;
 const WARMUP_MS        = 2000;
 const MIN_SAMPLES      = 8;
 const STABLE_WINDOW    = 5;
 const STABLE_THRESHOLD = 0.08;
 
-// Thread policy
 const MIN_THREADS = 2;
 const MAX_THREADS = 4;
 const THREAD_SPEED_THRESHOLD_MBPS = 4;
@@ -47,6 +45,8 @@ const testAgainBtn = $('testAgainBtn');
 const themeToggle = $('themeToggle');
 const locationStatus = $('locationStatus');
 const networkStatus = $('networkStatus');
+const ipValue = $('ipValue');
+const ipSubValue = $('ipSubValue');
 const locationModal = $('locationModal');
 const allowLocationBtn = $('allowLocationBtn');
 const denyLocationBtn = $('denyLocationBtn');
@@ -106,7 +106,6 @@ document.querySelectorAll('[data-close-modal]').forEach(btn => {
   });
 });
 
-// Close modal when clicking outside content
 [aboutModal, privacyModal, termsModal, locationModal].forEach(m => {
   if (!m) return;
   m.addEventListener('click', (e) => {
@@ -114,7 +113,6 @@ document.querySelectorAll('[data-close-modal]').forEach(btn => {
   });
 });
 
-// Escape key closes modals
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     [aboutModal, privacyModal, termsModal, locationModal].forEach(m => {
@@ -151,8 +149,6 @@ async function requestLocation() {
   });
 }
 
-// Build a human-readable location string. Prefer IP-based location
-// since it works regardless of permission, then append "Precise" if granted.
 function updateLocationDisplay() {
   const info = state.networkInfo;
   const ipParts = [info?.city, info?.region, info?.country].filter(Boolean);
@@ -170,28 +166,48 @@ function updateLocationDisplay() {
 }
 
 async function initLocation() {
-  // IP-based location (from network info) always shown.
-  // Precise location only requested if user previously allowed.
   if (state.locationPermission === 'granted') {
     await requestLocation();
   }
   updateLocationDisplay();
 }
 
-// ---------- Network info ----------
+// ---------- Network info (uses ipapi.co via backend) ----------
 async function fetchNetworkInfo() {
   try {
     networkStatus.textContent = 'Detecting…';
+    ipValue.textContent = 'Detecting…';
+    ipSubValue.textContent = 'Looking up location…';
+
     const res = await fetch('/api/network-info');
     if (!res.ok) throw new Error('bad status');
     const data = await res.json();
     state.networkInfo = data;
+
+    // Update header status strip
     networkStatus.textContent = data.isp || data.city || 'Unknown';
+
+    // Update IP showcase card
+    ipValue.textContent = data.ip || 'Unavailable';
+
+    const parts = [];
+    if (data.city)    parts.push(data.city);
+    if (data.region && data.region !== data.city) parts.push(data.region);
+    if (data.country) parts.push(data.country);
+    const locStr = parts.join(', ');
+
+    const subParts = [];
+    if (locStr)  subParts.push(locStr);
+    if (data.isp) subParts.push(data.isp);
+    ipSubValue.textContent = subParts.length ? subParts.join(' · ') : 'Location unavailable';
+
     updateLocationDisplay();
     return data;
   } catch (err) {
     console.warn('Network info error:', err);
     networkStatus.textContent = 'Not available';
+    ipValue.textContent = 'Unavailable';
+    ipSubValue.textContent = 'Could not detect IP';
     return null;
   }
 }
@@ -632,7 +648,6 @@ async function runTest() {
     const duration = (performance.now() - start) / 1000;
     progressFill.style.width = '100%';
 
-    // Prefer IP-based location. Precise location is optional.
     const results = {
       download_speed: dl.speedMbps,
       upload_speed: ul.speedMbps,
@@ -644,8 +659,8 @@ async function runTest() {
       country: state.networkInfo?.country || null,
       region: state.networkInfo?.region || null,
       city: state.networkInfo?.city || null,
-      latitude: state.location?.latitude || null,
-      longitude: state.location?.longitude || null,
+      latitude: state.location?.latitude ?? state.networkInfo?.latitude ?? null,
+      longitude: state.location?.longitude ?? state.networkInfo?.longitude ?? null,
       location_accuracy: state.location?.accuracy || null,
       isp: state.networkInfo?.isp || null,
       asn: state.networkInfo?.asn || null,
@@ -688,16 +703,15 @@ function displayResults(r) {
   resultPacketLoss.textContent = r.packet_loss.toFixed(1) + ' %';
   resultDuration.textContent = r.test_duration.toFixed(1) + ' s';
 
-  resultISP.textContent = r.isp || 'Not available';
   resultIP.textContent = r.public_ip || 'Not available';
+  resultISP.textContent = r.isp || 'Not available';
   resultConnection.textContent = r.connection_type || 'Not available';
 
-  // Location line: IP-based always, precise if granted.
   const ipParts = [r.city, r.region, r.country].filter(Boolean);
   const ipLoc = ipParts.length ? ipParts.join(', ') : null;
 
   let locText = 'Location unavailable';
-  if (ipLoc && r.latitude != null && r.longitude != null) {
+  if (ipLoc && r.latitude != null && r.longitude != null && r.location_accuracy != null) {
     locText = `${ipLoc} — precise: ${r.latitude.toFixed(3)}, ${r.longitude.toFixed(3)}`;
   } else if (ipLoc) {
     locText = `${ipLoc} (approximate, from IP)`;
@@ -744,7 +758,6 @@ testAgainBtn.addEventListener('click', () => {
   networkStatus.textContent = state.networkInfo?.isp || state.networkInfo?.city || 'Unknown';
 });
 
-// Wire up nav / footer links
 $('aboutLink')?.addEventListener('click', () => showModal(aboutModal));
 $('aboutFooter')?.addEventListener('click', () => showModal(aboutModal));
 $('privacyLink')?.addEventListener('click', () => showModal(privacyModal));
@@ -779,8 +792,7 @@ async function init() {
   renderHistory();
   initCookies();
 
-  // Fetch IP info first (this gives us location even without permission),
-  // then check for stored precise-location permission.
+  // Fetch IP info first — this also updates the IP showcase card.
   await fetchNetworkInfo();
   await initLocation();
   drawGauge(0, 1000);
