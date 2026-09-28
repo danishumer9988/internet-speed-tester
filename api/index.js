@@ -35,15 +35,10 @@ async function ensureDb() {
   return dbInitPromise;
 }
 
-// ---------------------------------------------------------------------------
-// Routes
-// ---------------------------------------------------------------------------
-
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Network info (proxy to ipapi.co — cached briefly to reduce calls)
 let networkCache = { at: 0, data: null };
 app.get('/api/network-info', async (req, res) => {
   try {
