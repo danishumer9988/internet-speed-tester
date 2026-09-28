@@ -1,0 +1,18 @@
+{
+  "name": "Internet Speed Test",
+  "short_name": "Speed Test",
+  "description": "Professional Internet Speed Test — measure download, upload, ping, jitter, and packet loss.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

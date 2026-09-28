@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Professional Internet Speed Test — measure download, upload, ping, jitter, and packet loss.">
+  <title>Internet Speed Test</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/icon.svg">
+  <link rel="apple-touch-icon" href="/icon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        <span>Internet Speed Test</span>
+      </div>
+      <nav class="nav">
+        <a href="#" id="aboutLink">About</a>
+        <a href="#" id="privacyLink">Privacy</a>
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+          <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Start Screen -->
+    <section id="startScreen" class="screen active">
+      <div class="card hero-card">
+        <h1>Internet Speed Test</h1>
+        <p class="subtitle">Test your connection speed quickly and accurately.</p>
+        <button id="startBtn" class="btn primary">START TEST</button>
+        <div class="status-row">
+          <div class="status-item">
+            <span class="label">Location</span>
+            <span id="locationStatus" class="value">Detecting...</span>
+          </div>
+          <div class="status-item">
+            <span class="label">Network</span>
+            <span id="networkStatus" class="value">Detecting...</span>
+          </div>
+        </div>
+      </div>
+      <div class="privacy-note">
+        <p>We record anonymous test results, including approximate location and network information. <a href="#" id="privacyLink2">Privacy Policy</a></p>
+      </div>
+    </section>
+
+    <!-- Testing Screen -->
+    <section id="testingScreen" class="screen">
+      <div class="card testing-card">
+        <div class="gauge-container">
+          <canvas id="gaugeCanvas" width="300" height="150"></canvas>
+          <div class="gauge-value">
+            <span id="gaugeValue">0</span>
+            <span class="gauge-unit">Mbps</span>
+          </div>
+        </div>
+        <div class="phase-indicator">
+          <span id="phaseText">Connecting...</span>
+        </div>
+        <div class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric">
+            <span class="metric-label">PING</span>
+            <span class="metric-value" id="pingValue">—</span>
+            <span class="metric-unit">ms</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">DOWNLOAD</span>
+            <span class="metric-value" id="downloadValue">—</span>
+            <span class="metric-unit">Mbps</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">UPLOAD</span>
+            <span class="metric-value" id="uploadValue">—</span>
+            <span class="metric-unit">Mbps</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">JITTER</span>
+            <span class="metric-value" id="jitterValue">—</span>
+            <span class="metric-unit">ms</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">PACKET LOSS</span>
+            <span class="metric-value" id="packetLossValue">—</span>
+            <span class="metric-unit">%</span>
+          </div>
+        </div>
+        <div id="testError" class="error-message" hidden></div>
+      </div>
+    </section>
+
+    <!-- Results Screen -->
+    <section id="resultsScreen" class="screen">
+      <div class="card results-card">
+        <h2>YOUR INTERNET RESULT</h2>
+        <div class="result-main">
+          <div class="result-download">
+            <span class="result-value" id="resultDownload">—</span>
+            <span class="result-unit">Mbps</span>
+            <span class="result-label">DOWNLOAD</span>
+          </div>
+          <div class="quality-badge" id="qualityBadge">—</div>
+        </div>
+        <div class="result-details">
+          <div class="detail-row">
+            <span>Upload</span>
+            <span id="resultUpload">— Mbps</span>
+          </div>
+          <div class="detail-row">
+            <span>Ping</span>
+            <span id="resultPing">— ms</span>
+          </div>
+          <div class="detail-row">
+            <span>Jitter</span>
+            <span id="resultJitter">— ms</span>
+          </div>
+          <div class="detail-row">
+            <span>Packet Loss</span>
+            <span id="resultPacketLoss">— %</span>
+          </div>
+          <div class="detail-row">
+            <span>Test Duration</span>
+            <span id="resultDuration">— s</span>
+          </div>
+        </div>
+        <div class="result-section">
+          <h3>NETWORK</h3>
+          <div class="detail-row">
+            <span>ISP</span>
+            <span id="resultISP">—</span>
+          </div>
+          <div class="detail-row">
+            <span>IP</span>
+            <span id="resultIP">—</span>
+          </div>
+          <div class="detail-row">
+            <span>Connection</span>
+            <span id="resultConnection">—</span>
+          </div>
+        </div>
+        <div class="result-section">
+          <h3>LOCATION</h3>
+          <div class="detail-row">
+            <span id="resultLocation">—</span>
+          </div>
+        </div>
+        <div class="result-section">
+          <h3>TEST SERVER</h3>
+          <div class="detail-row">
+            <span id="resultServer">—</span>
+          </div>
+        </div>
+        <div class="result-section">
+          <h3>DEVICE</h3>
+          <div class="detail-row">
+            <span id="resultDevice">—</span>
+          </div>
+        </div>
+        <button id="testAgainBtn" class="btn primary">TEST AGAIN</button>
+      </div>
+    </section>
+
+    <!-- Local History -->
+    <section id="historySection" class="history-section">
+      <h2>Recent Tests</h2>
+      <div id="historyList" class="history-list"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <strong>Internet Speed Test</strong>
+        <p>Fast. Simple. Private.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#" id="privacyFooter">Privacy</a>
+        <a href="#" id="termsFooter">Terms</a>
+      </div>
+      <p>&copy; 2026 Internet Speed Test</p>
+    </div>
+  </footer>
+
+  <!-- Location Permission Modal -->
+  <div id="locationModal" class="modal" hidden>
+    <div class="modal-content">
+      <h3>Improve your test results</h3>
+      <p>Allow location access to show your approximate test location and nearby network information.</p>
+      <div class="modal-actions">
+        <button id="allowLocationBtn" class="btn primary">Allow Location</button>
+        <button id="denyLocationBtn" class="btn secondary">Continue Without</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
