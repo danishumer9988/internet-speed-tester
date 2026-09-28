@@ -1,4 +1,4 @@
-const CACHE_NAME = 'speedtest-v4';
+const CACHE_NAME = 'speedtest-v5';
 const ASSETS = [
   '/',
   '/index.html',
@@ -26,14 +26,16 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Skip API and cross-origin (Cloudflare) requests
-  if (url.pathname.startsWith('/api/') || url.origin !== self.location.origin) return;
+  // Skip API calls, cross-origin (Cloudflare, Google Fonts), and non-GET
+  if (url.pathname.startsWith('/api/') ||
+      url.origin !== self.location.origin ||
+      event.request.method !== 'GET') {
+    return;
+  }
 
-  // Network-first for HTML shell
   const isHTML =
     event.request.mode === 'navigate' ||
-    (event.request.method === 'GET' &&
-     (event.request.headers.get('accept') || '').includes('text/html'));
+    (event.request.headers.get('accept') || '').includes('text/html');
 
   if (isHTML) {
     event.respondWith(
@@ -48,11 +50,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first for static assets
   event.respondWith(
     caches.match(event.request).then((cached) =>
       cached || fetch(event.request).then((res) => {
-        if (res.ok && event.request.method === 'GET') {
+        if (res.ok) {
           const clone = res.clone();
           caches.open(CACHE_NAME).then((c) => c.put(event.request, clone));
         }

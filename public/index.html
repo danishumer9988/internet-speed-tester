@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0a0f1e">
-  <meta name="description" content="Professional Internet Speed Test — measure download, upload, ping, jitter, and packet loss with pixel-perfect accuracy.">
+  <meta name="theme-color" content="#070b17">
+  <meta name="description" content="Professional Internet Speed Test — measure download, upload, ping, jitter, and packet loss.">
   <title>Internet Speed Test — Fast. Simple. Private.</title>
 
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/svg+xml" href="/icon.svg">
   <link rel="apple-touch-icon" href="/icon.svg">
 
-  <!-- Instant theme restore to avoid flash before CSS paints -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+
   <script>
-    (function() {
+    (function () {
       try {
         const saved = localStorage.getItem('theme');
         if (saved === 'light' || saved === 'dark') {
@@ -24,22 +27,22 @@
   </script>
 
   <style>
-    /* ============================================================
-       DESIGN TOKENS
-       ============================================================ */
+    /* =============== DESIGN TOKENS =============== */
     :root {
-      --bg-0: #f5f7fb;
-      --bg-1: #eef2f9;
+      --bg-0: #f4f7fc;
+      --bg-1: #e9eef8;
       --card-bg: #ffffff;
-      --card-bg-2: #fbfcfe;
-      --text-primary: #0b1220;
-      --text-secondary: #566076;
-      --text-tertiary: #8a94a8;
-      --border: #e4e8f0;
-      --border-strong: #cfd6e3;
+      --card-bg-2: #f9fbfe;
+      --card-hi: #ffffff;
+      --text-primary: #0a1124;
+      --text-secondary: #4a5570;
+      --text-tertiary: #8089a3;
+      --border: #e3e8f2;
+      --border-strong: #cdd5e6;
 
       --accent: #0ea5e9;
-      --accent-2: #6366f1;
+      --accent-2: #8b5cf6;
+      --accent-3: #06b6d4;
       --accent-soft: rgba(14, 165, 233, 0.10);
       --accent-glow: rgba(14, 165, 233, 0.28);
 
@@ -47,64 +50,58 @@
       --warning: #f59e0b;
       --error: #ef4444;
 
-      --gauge-bg: #e4e8f0;
+      --gauge-bg: #e3e8f2;
 
       --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
-      --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.05);
-      --shadow-lg: 0 20px 40px -12px rgba(15, 23, 42, 0.15), 0 8px 16px -8px rgba(15, 23, 42, 0.08);
-      --shadow-xl: 0 32px 64px -24px rgba(15, 23, 42, 0.22);
+      --shadow-md: 0 6px 16px -4px rgba(15, 23, 42, 0.10), 0 2px 6px -2px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 24px 48px -16px rgba(15, 23, 42, 0.18), 0 8px 20px -8px rgba(15, 23, 42, 0.08);
+      --shadow-xl: 0 40px 80px -32px rgba(15, 23, 42, 0.28);
 
       --radius-sm: 10px;
       --radius-md: 16px;
-      --radius-lg: 22px;
+      --radius-lg: 24px;
       --radius-pill: 999px;
 
-      --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', ui-monospace, Menlo, monospace;
+      --font-sans: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
 
-      --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-      --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-      --transition-slow: 450ms cubic-bezier(0.4, 0, 0.2, 1);
+      --t-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      --t-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      --t-slow: 450ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     [data-theme="dark"] {
-      --bg-0: #070b17;
-      --bg-1: #0b1223;
-      --card-bg: #111a30;
-      --card-bg-2: #0e172a;
-      --text-primary: #f0f4fb;
-      --text-secondary: #a4b0c9;
-      --text-tertiary: #6b7899;
-      --border: #1f2c47;
-      --border-strong: #2c3b5c;
+      --bg-0: #060a15;
+      --bg-1: #0a1224;
+      --card-bg: #0f1a33;
+      --card-bg-2: #0c152a;
+      --card-hi: #16233f;
+      --text-primary: #eef3fd;
+      --text-secondary: #9dabc9;
+      --text-tertiary: #5f6c8c;
+      --border: #1d2b49;
+      --border-strong: #2b3d61;
 
       --accent: #38bdf8;
       --accent-2: #a78bfa;
+      --accent-3: #22d3ee;
       --accent-soft: rgba(56, 189, 248, 0.10);
       --accent-glow: rgba(56, 189, 248, 0.35);
 
-      --gauge-bg: #1c2745;
+      --gauge-bg: #1a2542;
 
       --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-      --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.4), 0 2px 6px -2px rgba(0, 0, 0, 0.3);
-      --shadow-lg: 0 20px 40px -12px rgba(0, 0, 0, 0.5), 0 8px 16px -8px rgba(0, 0, 0, 0.4);
-      --shadow-xl: 0 32px 64px -24px rgba(0, 0, 0, 0.65);
+      --shadow-md: 0 6px 16px -4px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 24px 48px -16px rgba(0, 0, 0, 0.55);
+      --shadow-xl: 0 40px 80px -32px rgba(0, 0, 0, 0.7);
     }
 
-    /* ============================================================
-       RESET & BASE
-       ============================================================ */
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* =============== RESET =============== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
 
     body {
       font-family: var(--font-sans);
-      font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
       background: var(--bg-0);
       color: var(--text-primary);
       line-height: 1.55;
@@ -114,20 +111,20 @@
       flex-direction: column;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      transition: background var(--transition-base), color var(--transition-base);
       overflow-x: hidden;
+      transition: background var(--t-base), color var(--t-base);
       position: relative;
     }
 
-    /* Ambient aurora background */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       z-index: -2;
       background:
-        radial-gradient(700px 500px at 12% -5%, var(--accent-glow), transparent 60%),
-        radial-gradient(700px 500px at 95% 110%, var(--accent-2), transparent 60%),
+        radial-gradient(900px 600px at 8% -10%, var(--accent-glow), transparent 65%),
+        radial-gradient(800px 600px at 105% 115%, var(--accent-2), transparent 65%),
+        radial-gradient(600px 400px at 50% 50%, color-mix(in srgb, var(--accent-3) 8%, transparent), transparent 70%),
         linear-gradient(180deg, var(--bg-0), var(--bg-1));
       opacity: 0.55;
       pointer-events: none;
@@ -138,26 +135,23 @@
       position: fixed;
       inset: 0;
       z-index: -1;
-      background-image:
-        radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
-      background-size: 22px 22px;
-      mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
-      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+      background-image: radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
       pointer-events: none;
     }
 
-    /* ============================================================
-       HEADER
-       ============================================================ */
+    /* =============== HEADER =============== */
     .header {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: color-mix(in srgb, var(--card-bg) 78%, transparent);
-      backdrop-filter: saturate(180%) blur(14px);
-      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      background: color-mix(in srgb, var(--card-bg) 72%, transparent);
+      backdrop-filter: saturate(180%) blur(16px);
+      -webkit-backdrop-filter: saturate(180%) blur(16px);
       border-bottom: 1px solid var(--border);
-      transition: background var(--transition-base), border-color var(--transition-base);
+      transition: background var(--t-base), border-color var(--t-base);
     }
 
     .header-inner {
@@ -173,10 +167,10 @@
     .logo {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      font-weight: 700;
-      font-size: 1.02rem;
-      letter-spacing: -0.01em;
+      gap: 0.65rem;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
       color: var(--text-primary);
       user-select: none;
     }
@@ -184,47 +178,39 @@
     .logo-mark {
       display: grid;
       place-items: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       color: #ffffff;
-      box-shadow: 0 6px 18px -4px var(--accent-glow);
+      box-shadow: 0 8px 22px -6px var(--accent-glow);
       flex-shrink: 0;
     }
-
     .logo-mark svg { width: 18px; height: 18px; }
 
     .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
     .logo-text small {
-      font-size: 0.66rem;
-      font-weight: 500;
+      font-size: 0.64rem;
+      font-weight: 600;
       color: var(--text-tertiary);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      margin-top: 1px;
+      margin-top: 2px;
     }
 
-    .nav {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
+    .nav { display: flex; align-items: center; gap: 0.3rem; }
 
     .nav a {
       color: var(--text-secondary);
       text-decoration: none;
-      font-size: 0.875rem;
-      font-weight: 500;
-      padding: 0.5rem 0.85rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.5rem 0.9rem;
       border-radius: var(--radius-pill);
-      transition: color var(--transition-fast), background var(--transition-fast);
+      transition: color var(--t-fast), background var(--t-fast);
+      cursor: pointer;
     }
-
-    .nav a:hover {
-      color: var(--text-primary);
-      background: var(--accent-soft);
-    }
+    .nav a:hover { color: var(--text-primary); background: var(--accent-soft); }
 
     .theme-toggle {
       display: grid;
@@ -237,55 +223,44 @@
       color: var(--text-secondary);
       border-radius: var(--radius-pill);
       cursor: pointer;
-      transition: all var(--transition-fast);
+      transition: all var(--t-fast);
       position: relative;
       overflow: hidden;
     }
-
     .theme-toggle:hover {
       color: var(--accent);
       border-color: var(--accent);
       box-shadow: 0 0 0 4px var(--accent-soft);
     }
-
     .theme-toggle svg {
       width: 17px;
       height: 17px;
-      transition: transform var(--transition-base), opacity var(--transition-base);
+      transition: transform var(--t-base), opacity var(--t-base);
       position: absolute;
     }
-
     .theme-toggle .sun { transform: translateY(-140%); opacity: 0; }
     .theme-toggle .moon { transform: translateY(0); opacity: 1; }
-
     [data-theme="dark"] .theme-toggle .sun { transform: translateY(0); opacity: 1; }
     [data-theme="dark"] .theme-toggle .moon { transform: translateY(140%); opacity: 0; }
 
-    /* ============================================================
-       MAIN LAYOUT
-       ============================================================ */
+    /* =============== MAIN =============== */
     .main {
       flex: 1;
       width: 100%;
-      max-width: 900px;
+      max-width: 920px;
       margin: 0 auto;
       padding: 2.25rem 1.25rem 3rem;
     }
 
     .screen { display: none; }
-    .screen.active {
-      display: block;
-      animation: screen-in var(--transition-slow) both;
-    }
+    .screen.active { display: block; animation: screen-in var(--t-slow) both; }
 
     @keyframes screen-in {
       from { opacity: 0; transform: translateY(14px) scale(0.995); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* ============================================================
-       CARDS
-       ============================================================ */
+    /* =============== CARDS =============== */
     .card {
       background: linear-gradient(180deg, var(--card-bg), var(--card-bg-2));
       border: 1px solid var(--border);
@@ -294,42 +269,34 @@
       box-shadow: var(--shadow-lg);
       position: relative;
       overflow: hidden;
-      transition: background var(--transition-base), border-color var(--transition-base);
+      transition: background var(--t-base), border-color var(--t-base);
     }
-
     .card::before {
-      /* Top gradient hairline accent */
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      opacity: 0.5;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
+      opacity: 0.65;
     }
 
-    /* ============================================================
-       HERO (START) SCREEN
-       ============================================================ */
-    .hero-card {
-      text-align: center;
-      padding: 3rem 2rem 2.5rem;
-    }
+    /* =============== HERO =============== */
+    .hero-card { text-align: center; padding: 3rem 2rem 2.5rem; }
 
     .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.4rem 0.85rem 0.4rem 0.5rem;
+      gap: 0.55rem;
+      padding: 0.42rem 0.9rem 0.42rem 0.55rem;
       border-radius: var(--radius-pill);
       background: var(--accent-soft);
       border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
       color: var(--accent);
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
       margin-bottom: 1.25rem;
     }
-
     .hero-badge .dot {
       width: 6px;
       height: 6px;
@@ -338,19 +305,18 @@
       box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 25%, transparent);
       animation: pulse-dot 2s infinite;
     }
-
     @keyframes pulse-dot {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.55; }
     }
 
     .hero-card h1 {
-      font-size: clamp(1.9rem, 4.2vw, 2.6rem);
-      font-weight: 800;
-      letter-spacing: -0.035em;
-      line-height: 1.1;
-      margin-bottom: 0.75rem;
-      background: linear-gradient(135deg, var(--text-primary) 40%, var(--text-secondary));
+      font-size: clamp(2rem, 4.6vw, 2.9rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      margin-bottom: 0.85rem;
+      background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent) 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -358,60 +324,52 @@
 
     .subtitle {
       color: var(--text-secondary);
-      font-size: 1.02rem;
-      max-width: 460px;
+      font-size: 1.05rem;
+      max-width: 480px;
       margin: 0 auto 2rem;
       line-height: 1.6;
     }
 
-    /* ---------- Primary CTA ---------- */
+    /* =============== BUTTONS =============== */
     .btn {
       position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.55rem;
-      padding: 0.95rem 2rem;
+      gap: 0.6rem;
+      padding: 1rem 2.2rem;
       border-radius: var(--radius-pill);
       font-family: inherit;
-      font-size: 0.96rem;
-      font-weight: 600;
-      letter-spacing: -0.005em;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
       border: none;
       cursor: pointer;
-      transition: all var(--transition-fast);
+      transition: all var(--t-fast);
       text-decoration: none;
       white-space: nowrap;
     }
-
     .btn.primary {
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       color: #ffffff;
-      box-shadow:
-        0 10px 24px -8px var(--accent-glow),
-        inset 0 1px 0 rgba(255,255,255,0.25);
+      box-shadow: 0 12px 28px -8px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.25);
       overflow: hidden;
     }
-
     .btn.primary::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.32) 50%, transparent 70%);
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
       transform: translateX(-100%);
-      transition: transform var(--transition-slow);
+      transition: transform var(--t-slow);
     }
-
     .btn.primary:hover::after { transform: translateX(100%); }
     .btn.primary:hover {
-      transform: translateY(-1px);
-      box-shadow:
-        0 14px 28px -8px var(--accent-glow),
-        inset 0 1px 0 rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 18px 36px -8px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.3);
     }
     .btn.primary:active { transform: translateY(0); }
-
-    .btn.primary svg { width: 17px; height: 17px; }
+    .btn.primary svg { width: 18px; height: 18px; }
 
     .btn.secondary {
       background: transparent;
@@ -424,116 +382,102 @@
       border-color: var(--accent);
     }
 
-    /* ---------- Status strip (Location / Network) ---------- */
+    /* =============== STATUS STRIP =============== */
     .status-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      max-width: 520px;
+      gap: 0.85rem;
+      max-width: 560px;
       margin: 2rem auto 0;
     }
 
     .status-item {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
-      padding: 0.75rem 0.9rem;
-      background: color-mix(in srgb, var(--card-bg-2) 60%, transparent);
+      gap: 0.7rem;
+      padding: 0.85rem 1rem;
+      background: color-mix(in srgb, var(--card-hi) 60%, transparent);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       text-align: left;
-      transition: all var(--transition-fast);
+      transition: all var(--t-fast);
     }
-
     .status-item:hover { border-color: var(--border-strong); }
 
     .status-icon {
       display: grid;
       place-items: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       background: var(--accent-soft);
       color: var(--accent);
       flex-shrink: 0;
     }
-
-    .status-icon svg { width: 16px; height: 16px; }
+    .status-icon svg { width: 17px; height: 17px; }
 
     .status-item .label {
       display: block;
       font-size: 0.66rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-tertiary);
-      letter-spacing: 0.09em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       line-height: 1;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
     }
-
     .status-item .value {
       display: block;
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       font-weight: 600;
       color: var(--text-primary);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      max-width: 150px;
+      max-width: 160px;
     }
 
-    /* ---------- Privacy note ---------- */
+    /* =============== PRIVACY NOTE =============== */
     .privacy-note {
-      max-width: 560px;
+      max-width: 620px;
       margin: 1.5rem auto 0;
-      padding: 0.75rem 1rem;
+      padding: 0.85rem 1.1rem;
       display: flex;
       align-items: flex-start;
-      gap: 0.6rem;
-      font-size: 0.78rem;
+      gap: 0.65rem;
+      font-size: 0.8rem;
       color: var(--text-secondary);
-      background: color-mix(in srgb, var(--card-bg) 40%, transparent);
+      background: color-mix(in srgb, var(--card-bg) 50%, transparent);
       border: 1px dashed var(--border);
       border-radius: var(--radius-md);
-      line-height: 1.5;
+      line-height: 1.55;
     }
-
     .privacy-note svg {
-      width: 15px;
-      height: 15px;
+      width: 16px;
+      height: 16px;
       flex-shrink: 0;
       margin-top: 2px;
       color: var(--accent);
     }
-
     .privacy-note a {
       color: var(--accent);
-      font-weight: 600;
+      font-weight: 700;
       text-decoration: none;
+      cursor: pointer;
     }
     .privacy-note a:hover { text-decoration: underline; }
 
-    /* ============================================================
-       TESTING SCREEN
-       ============================================================ */
-    .testing-card {
-      text-align: center;
-      padding: 2rem 1.5rem 2.5rem;
-    }
+    /* =============== TESTING SCREEN =============== */
+    .testing-card { text-align: center; padding: 2rem 1.5rem 2.5rem; }
 
     .gauge-container {
       position: relative;
       width: 100%;
-      max-width: 340px;
+      max-width: 360px;
       margin: 0 auto 0.5rem;
-      filter: drop-shadow(0 12px 28px var(--accent-glow));
+      filter: drop-shadow(0 14px 30px var(--accent-glow));
     }
-
-    .gauge-container canvas {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
+    .gauge-container canvas { width: 100%; height: auto; display: block; }
 
     .gauge-value {
       position: absolute;
@@ -544,43 +488,40 @@
       width: 100%;
       pointer-events: none;
     }
-
     .gauge-value span:first-child {
       display: block;
-      font-size: clamp(2.4rem, 8vw, 3.1rem);
+      font-family: var(--font-mono);
+      font-size: clamp(2.5rem, 8.5vw, 3.3rem);
       font-weight: 800;
       font-variant-numeric: tabular-nums;
       letter-spacing: -0.04em;
       color: var(--text-primary);
       line-height: 1;
     }
-
     .gauge-unit {
       display: inline-block;
-      margin-top: 0.35rem;
+      margin-top: 0.4rem;
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-tertiary);
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
     }
 
-    /* ---------- Phase pill ---------- */
     .phase-indicator {
       display: inline-flex;
       align-items: center;
-      gap: 0.55rem;
-      padding: 0.5rem 1rem;
+      gap: 0.6rem;
+      padding: 0.55rem 1.1rem;
       margin: 1.25rem 0;
       border-radius: var(--radius-pill);
       background: var(--accent-soft);
       border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
       color: var(--accent);
-      font-size: 0.85rem;
-      font-weight: 600;
-      min-height: 2.2em;
+      font-size: 0.88rem;
+      font-weight: 700;
+      min-height: 2.3em;
     }
-
     .phase-indicator::before {
       content: '';
       width: 7px;
@@ -589,10 +530,8 @@
       background: currentColor;
       animation: pulse-dot 1.4s infinite;
     }
-
     .phase-indicator:empty::before { display: none; }
 
-    /* ---------- Progress bar ---------- */
     .progress-bar {
       position: relative;
       width: 100%;
@@ -602,7 +541,6 @@
       border-radius: var(--radius-pill);
       overflow: hidden;
     }
-
     .progress-fill {
       position: relative;
       height: 100%;
@@ -612,24 +550,22 @@
       transition: width 350ms cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 0 12px var(--accent-glow);
     }
-
     .progress-fill::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
       animation: shimmer 1.6s infinite;
     }
-
     @keyframes shimmer {
       from { transform: translateX(-100%); }
       to   { transform: translateX(100%); }
     }
 
-    /* ---------- Metric tiles ---------- */
+    /* =============== METRIC TILES (testing) =============== */
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 0.75rem;
     }
 
@@ -637,21 +573,21 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.4rem;
       padding: 1rem 0.6rem;
-      background: color-mix(in srgb, var(--card-bg-2) 70%, transparent);
+      background: color-mix(in srgb, var(--card-hi) 70%, transparent);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      transition: all var(--transition-fast);
+      transition: all var(--t-fast);
       position: relative;
       overflow: hidden;
     }
-
     .metric:hover {
       border-color: var(--accent);
       transform: translateY(-2px);
       box-shadow: var(--shadow-md);
     }
+    .metric-wide { grid-column: span 1; }
 
     .metric-icon {
       display: grid;
@@ -661,107 +597,144 @@
       border-radius: 8px;
       background: var(--accent-soft);
       color: var(--accent);
-      margin-bottom: 0.15rem;
+      margin-bottom: 0.1rem;
     }
-
     .metric-icon svg { width: 15px; height: 15px; }
 
     .metric-label {
       font-size: 0.63rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--text-tertiary);
       letter-spacing: 0.1em;
       text-transform: uppercase;
     }
-
     .metric-value {
       font-family: var(--font-mono);
-      font-size: 1.35rem;
-      font-weight: 700;
+      font-size: 1.4rem;
+      font-weight: 800;
       font-variant-numeric: tabular-nums;
       color: var(--text-primary);
       line-height: 1.1;
     }
-
     .metric-unit {
       font-size: 0.68rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-tertiary);
     }
 
-    /* ============================================================
-       RESULTS SCREEN
-       ============================================================ */
+    /* =============== RESULTS SCREEN =============== */
     .results-card { padding: 2.25rem; }
 
     .results-card h2 {
       text-align: center;
-      font-size: 0.78rem;
-      font-weight: 700;
+      font-size: 0.8rem;
+      font-weight: 800;
       color: var(--text-tertiary);
-      letter-spacing: 0.18em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       margin-bottom: 1.75rem;
     }
 
-    .result-main {
-      text-align: center;
-      padding-bottom: 2rem;
-      border-bottom: 1px solid var(--border);
+    /* Download / Upload showcase side by side */
+    .speed-showcase {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
       margin-bottom: 1.5rem;
     }
 
-    .result-download {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.2rem;
+    .speed-block {
+      position: relative;
+      padding: 1.75rem 1.25rem 1.5rem;
+      background:
+        linear-gradient(180deg,
+          color-mix(in srgb, var(--accent) 8%, transparent),
+          color-mix(in srgb, var(--card-hi) 80%, transparent));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      overflow: hidden;
+      transition: all var(--t-base);
+    }
+    .speed-block:hover {
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
     }
 
-    .result-value {
+    .speed-block.upload {
+      background:
+        linear-gradient(180deg,
+          color-mix(in srgb, var(--accent-2) 10%, transparent),
+          color-mix(in srgb, var(--card-hi) 80%, transparent));
+    }
+    .speed-block.upload:hover {
+      border-color: color-mix(in srgb, var(--accent-2) 45%, transparent);
+    }
+
+    .speed-block-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-3));
+      color: #ffffff;
+      margin-bottom: 0.85rem;
+      box-shadow: 0 8px 18px -6px var(--accent-glow);
+    }
+    .speed-block.upload .speed-block-icon {
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      box-shadow: 0 8px 18px -6px color-mix(in srgb, var(--accent-2) 40%, transparent);
+    }
+    .speed-block-icon svg { width: 20px; height: 20px; }
+
+    .speed-block-value {
       font-family: var(--font-mono);
-      font-size: clamp(3.2rem, 12vw, 4.4rem);
+      font-size: clamp(2.2rem, 6.5vw, 3rem);
       font-weight: 800;
       font-variant-numeric: tabular-nums;
-      letter-spacing: -0.05em;
+      letter-spacing: -0.04em;
       line-height: 1;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 0.35rem;
     }
 
-    .result-unit {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text-secondary);
-      letter-spacing: 0.05em;
-    }
-
-    .result-label {
-      font-size: 0.7rem;
-      font-weight: 700;
+    .speed-block-unit {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 800;
       color: var(--text-tertiary);
-      letter-spacing: 0.2em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      margin-top: 0.4rem;
+    }
+
+    .speed-block-label {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-secondary);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
     }
 
     .quality-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      margin-top: 1.25rem;
-      padding: 0.45rem 1rem;
+      gap: 0.45rem;
+      margin: 1.25rem auto 1.5rem;
+      padding: 0.5rem 1.15rem;
       border-radius: var(--radius-pill);
-      font-size: 0.82rem;
-      font-weight: 700;
+      font-size: 0.85rem;
+      font-weight: 800;
       background: var(--border);
       color: var(--text-secondary);
       border: 1px solid transparent;
-      transition: all var(--transition-base);
+      letter-spacing: 0.02em;
+      transition: all var(--t-base);
     }
-
     .quality-badge::before {
       content: '';
       width: 7px;
@@ -769,7 +742,6 @@
       border-radius: 50%;
       background: currentColor;
     }
-
     .quality-badge.excellent {
       background: color-mix(in srgb, var(--success) 15%, transparent);
       color: var(--success);
@@ -791,36 +763,31 @@
       border-color: color-mix(in srgb, var(--error) 35%, transparent);
     }
 
-    /* ---------- Secondary metrics list ---------- */
+    /* Secondary metrics row */
     .result-details {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 0.85rem;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.75rem;
       margin-bottom: 1.5rem;
     }
-
     .result-details .detail-row {
       display: flex;
       flex-direction: column;
-      gap: 0.2rem;
-      padding: 0.85rem 1rem;
-      background: color-mix(in srgb, var(--card-bg-2) 60%, transparent);
+      gap: 0.25rem;
+      padding: 0.9rem 1rem;
+      background: color-mix(in srgb, var(--card-hi) 60%, transparent);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      font-size: 0.95rem;
-      transition: border-color var(--transition-fast);
+      transition: border-color var(--t-fast);
     }
-
     .result-details .detail-row:hover { border-color: var(--border-strong); }
-
     .result-details .detail-row span:first-child {
-      font-size: 0.68rem;
-      font-weight: 700;
+      font-size: 0.66rem;
+      font-weight: 800;
       color: var(--text-tertiary);
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
-
     .result-details .detail-row span:last-child {
       font-family: var(--font-mono);
       font-size: 1.05rem;
@@ -829,55 +796,45 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* ---------- Info sections (network/location/device) ---------- */
+    /* Info sections */
     .result-section {
-      padding: 1.1rem 1.15rem;
+      padding: 1.15rem 1.2rem;
       margin-bottom: 0.75rem;
-      background: color-mix(in srgb, var(--card-bg-2) 50%, transparent);
+      background: color-mix(in srgb, var(--card-hi) 50%, transparent);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
     }
-
     .result-section h3 {
       display: flex;
       align-items: center;
-      gap: 0.45rem;
+      gap: 0.5rem;
       font-size: 0.68rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--text-tertiary);
-      letter-spacing: 0.14em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.85rem;
     }
-
-    .result-section h3 svg {
-      width: 13px;
-      height: 13px;
-      color: var(--accent);
-    }
+    .result-section h3 svg { width: 13px; height: 13px; color: var(--accent); }
 
     .result-section .detail-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
-      padding: 0.35rem 0;
-      font-size: 0.9rem;
-      border-bottom: 1px dashed transparent;
+      padding: 0.4rem 0;
+      font-size: 0.92rem;
     }
-
     .result-section .detail-row + .detail-row {
       border-top: 1px solid var(--border);
-      padding-top: 0.55rem;
-      margin-top: 0.2rem;
+      padding-top: 0.6rem;
+      margin-top: 0.25rem;
     }
-
     .result-section .detail-row span:first-child {
       color: var(--text-secondary);
-      font-weight: 500;
+      font-weight: 600;
       font-size: 0.85rem;
     }
-
     .result-section .detail-row span:last-child {
       color: var(--text-primary);
       font-weight: 600;
@@ -886,84 +843,82 @@
       max-width: 65%;
     }
 
+    .location-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+    .location-line svg {
+      width: 15px;
+      height: 15px;
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
     #testAgainBtn {
       width: 100%;
       margin-top: 1.25rem;
     }
 
-    /* ============================================================
-       LOCAL HISTORY
-       ============================================================ */
-    .history-section {
-      margin-top: 2.5rem;
-    }
-
+    /* =============== HISTORY =============== */
+    .history-section { margin-top: 2.5rem; }
     .history-section h2 {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.95rem;
-      font-weight: 700;
+      gap: 0.55rem;
+      font-size: 1rem;
+      font-weight: 800;
       color: var(--text-primary);
       margin-bottom: 1rem;
       letter-spacing: -0.01em;
     }
-
-    .history-section h2 svg {
-      width: 15px;
-      height: 15px;
-      color: var(--accent);
-    }
+    .history-section h2 svg { width: 16px; height: 16px; color: var(--accent); }
 
     .history-list {
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
     }
-
     .history-item {
       display: grid;
       grid-template-columns: auto 1fr;
       align-items: center;
       gap: 1rem;
-      padding: 0.85rem 1.1rem;
+      padding: 0.9rem 1.15rem;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-sm);
-      transition: all var(--transition-fast);
+      transition: all var(--t-fast);
     }
-
     .history-item:hover {
       border-color: var(--accent);
       transform: translateY(-1px);
       box-shadow: var(--shadow-md);
     }
-
     .history-date {
       font-size: 0.72rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--text-tertiary);
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       padding-right: 0.9rem;
       border-right: 1px solid var(--border);
-      min-width: 62px;
+      min-width: 64px;
     }
-
-    .history-metrics {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-    }
-
+    .history-metrics { display: flex; flex-wrap: wrap; gap: 0.4rem; }
     .history-metrics span {
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
-      padding: 0.25rem 0.65rem;
+      padding: 0.28rem 0.7rem;
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 700;
       font-family: var(--font-mono);
       font-variant-numeric: tabular-nums;
       color: var(--text-primary);
@@ -971,20 +926,87 @@
       border-radius: var(--radius-pill);
       border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
     }
-
     .empty-history {
       padding: 1.5rem;
       text-align: center;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       color: var(--text-tertiary);
       background: var(--card-bg);
       border: 1px dashed var(--border);
       border-radius: var(--radius-md);
     }
 
-    /* ============================================================
-       MODAL
-       ============================================================ */
+    /* =============== FOOTER =============== */
+    .footer {
+      margin-top: auto;
+      padding: 2rem 1.25rem 1.5rem;
+      border-top: 1px solid var(--border);
+      background: color-mix(in srgb, var(--card-bg) 55%, transparent);
+    }
+    .footer-inner {
+      max-width: 920px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.9rem;
+      text-align: center;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-weight: 800;
+      font-size: 0.92rem;
+      color: var(--text-primary);
+    }
+    .footer-brand svg { width: 16px; height: 16px; color: var(--accent); }
+    .footer-tag {
+      font-size: 0.82rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.02em;
+    }
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      margin: 0.3rem 0;
+    }
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: color var(--t-fast);
+      cursor: pointer;
+    }
+    .footer-links a:hover { color: var(--accent); }
+
+    .footer-designed {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+      border-radius: var(--radius-pill);
+    }
+    .footer-designed svg { width: 13px; height: 13px; color: var(--accent); }
+    .footer-designed b { color: var(--accent); font-weight: 800; }
+
+    .footer-copy {
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+      width: 100%;
+      max-width: 340px;
+    }
+
+    /* =============== MODALS (location/about/privacy) =============== */
     .modal {
       position: fixed;
       inset: 0;
@@ -995,28 +1017,24 @@
       background: rgba(6, 11, 26, 0.55);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      animation: fade-in var(--transition-base) both;
+      animation: fade-in var(--t-base) both;
     }
-
     .modal[hidden] { display: none; }
-
-    @keyframes fade-in {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 
     .modal-content {
       width: 100%;
-      max-width: 420px;
-      padding: 1.75rem 1.5rem 1.5rem;
+      max-width: 480px;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 2rem 1.65rem 1.65rem;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-xl);
-      text-align: center;
-      animation: modal-in var(--transition-base) both;
+      text-align: left;
+      animation: modal-in var(--t-base) both;
     }
-
     @keyframes modal-in {
       from { opacity: 0; transform: translateY(12px) scale(0.97); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -1025,139 +1043,155 @@
     .modal-icon {
       display: grid;
       place-items: center;
-      width: 52px;
-      height: 52px;
-      margin: 0 auto 1rem;
-      border-radius: 14px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+      width: 54px;
+      height: 54px;
+      margin: 0 auto 1.15rem;
+      border-radius: 15px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #ffffff;
+      box-shadow: 0 12px 26px -8px var(--accent-glow);
     }
-
-    .modal-icon svg { width: 24px; height: 24px; }
+    .modal-icon svg { width: 26px; height: 26px; }
 
     .modal-content h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.015em;
-      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.65rem;
       color: var(--text-primary);
+      text-align: center;
     }
-
     .modal-content p {
-      font-size: 0.88rem;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 1rem;
+    }
+    .modal-content h4 {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text-tertiary);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 1.25rem 0 0.6rem;
+    }
+    .modal-content ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 0.5rem;
+    }
+    .modal-content ul li {
+      position: relative;
+      padding-left: 1.35rem;
+      font-size: 0.9rem;
       color: var(--text-secondary);
       line-height: 1.6;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .modal-content ul li::before {
+      content: '';
+      position: absolute;
+      left: 0.25rem;
+      top: 0.65rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
     }
 
     .modal-actions {
       display: flex;
       flex-direction: column;
-      gap: 0.55rem;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
     }
-
     .modal-actions .btn {
       width: 100%;
-      padding: 0.85rem 1.25rem;
-      font-size: 0.9rem;
+      padding: 0.9rem 1.25rem;
+      font-size: 0.92rem;
     }
 
-    /* ============================================================
-       ERROR
-       ============================================================ */
+    /* =============== COOKIE BANNER =============== */
+    .cookie-banner {
+      position: fixed;
+      left: 1rem;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 150;
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      padding: 1.1rem 1.25rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      animation: cookie-in var(--t-slow) both;
+    }
+    .cookie-banner[hidden] { display: none; }
+    @keyframes cookie-in {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .cookie-banner-inner {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .cookie-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border-radius: 11px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .cookie-icon svg { width: 18px; height: 18px; }
+
+    .cookie-text { font-size: 0.85rem; line-height: 1.55; color: var(--text-secondary); }
+    .cookie-text strong { color: var(--text-primary); font-weight: 700; display: block; margin-bottom: 0.15rem; }
+    .cookie-text a {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .cookie-text a:hover { text-decoration: underline; }
+
+    .cookie-actions {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .cookie-actions .btn {
+      padding: 0.6rem 1.25rem;
+      font-size: 0.85rem;
+    }
+
+    /* =============== ERROR =============== */
     .error-message {
       display: flex;
       align-items: flex-start;
       gap: 0.65rem;
       margin-top: 1.25rem;
-      padding: 0.85rem 1rem;
-      font-size: 0.85rem;
-      font-weight: 500;
+      padding: 0.9rem 1rem;
+      font-size: 0.86rem;
+      font-weight: 600;
       color: var(--error);
       background: color-mix(in srgb, var(--error) 10%, transparent);
       border: 1px solid color-mix(in srgb, var(--error) 30%, transparent);
       border-radius: var(--radius-md);
       text-align: left;
     }
+    .error-message svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
 
-    .error-message svg {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    /* ============================================================
-       FOOTER
-       ============================================================ */
-    .footer {
-      margin-top: auto;
-      padding: 2rem 1.25rem 1.5rem;
-      border-top: 1px solid var(--border);
-      background: color-mix(in srgb, var(--card-bg) 50%, transparent);
-    }
-
-    .footer-inner {
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.85rem;
-      text-align: center;
-    }
-
-    .footer-brand {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: var(--text-primary);
-    }
-
-    .footer-brand svg {
-      width: 16px;
-      height: 16px;
-      color: var(--accent);
-    }
-
-    .footer-tag {
-      font-size: 0.8rem;
-      color: var(--text-tertiary);
-      letter-spacing: 0.02em;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 1.5rem;
-      margin: 0.25rem 0;
-    }
-
-    .footer-links a {
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 0.8rem;
-      font-weight: 500;
-      transition: color var(--transition-fast);
-    }
-
-    .footer-links a:hover { color: var(--accent); }
-
-    .footer-copy {
-      font-size: 0.72rem;
-      color: var(--text-tertiary);
-      padding-top: 0.5rem;
-      border-top: 1px solid var(--border);
-      width: 100%;
-      max-width: 320px;
-      padding-top: 0.85rem;
-    }
-
-    /* ============================================================
-       RESPONSIVE
-       ============================================================ */
+    /* =============== RESPONSIVE =============== */
     @media (max-width: 720px) {
       .main { padding: 1.5rem 1rem 2.5rem; }
       .card { padding: 1.75rem 1.35rem; }
@@ -1168,13 +1202,15 @@
       .status-item .value { max-width: 100%; }
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 520px) {
       .header-inner { padding: 0.7rem 1rem; }
       .logo-text span:first-child { font-size: 0.95rem; }
       .logo-text small { display: none; }
       .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
       .metric { padding: 0.85rem 0.5rem; }
       .metric-value { font-size: 1.2rem; }
+      .speed-showcase { grid-template-columns: 1fr; gap: 0.75rem; }
+      .speed-block { padding: 1.5rem 1rem 1.25rem; }
       .result-details { grid-template-columns: 1fr 1fr; }
       .history-item {
         grid-template-columns: 1fr;
@@ -1188,9 +1224,11 @@
         padding-bottom: 0.5rem;
       }
       .history-metrics { justify-content: center; }
+      .cookie-banner { left: 0.75rem; right: 0.75rem; bottom: 0.75rem; padding: 1rem; }
+      .cookie-actions { justify-content: stretch; }
+      .cookie-actions .btn { flex: 1; }
     }
 
-    /* Reduced motion */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -1202,9 +1240,7 @@
 </head>
 <body>
 
-  <!-- =========================================================
-       HEADER
-       ========================================================= -->
+  <!-- ============ HEADER ============ -->
   <header class="header">
     <div class="header-inner">
       <div class="logo">
@@ -1219,8 +1255,8 @@
         </span>
       </div>
       <nav class="nav">
-        <a href="#" id="aboutLink">About</a>
-        <a href="#" id="privacyLink">Privacy</a>
+        <a id="aboutLink">About</a>
+        <a id="privacyLink">Privacy</a>
         <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
           <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="4"/>
@@ -1234,12 +1270,10 @@
     </div>
   </header>
 
-  <!-- =========================================================
-       MAIN
-       ========================================================= -->
+  <!-- ============ MAIN ============ -->
   <main class="main">
 
-    <!-- ============ START SCREEN ============ -->
+    <!-- ===== START SCREEN ===== -->
     <section id="startScreen" class="screen active">
       <div class="card hero-card">
         <div class="hero-badge">
@@ -1249,8 +1283,8 @@
 
         <h1>Measure your<br>true internet speed</h1>
         <p class="subtitle">
-          Test download, upload, latency, jitter, and packet loss —
-          in a single pass, right from your browser.
+          Download, upload, latency, jitter, and packet loss —
+          all in one fast, private test.
         </p>
 
         <button id="startBtn" class="btn primary">
@@ -1295,17 +1329,17 @@
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
         <span>
-          We store anonymous test results — including approximate location and network info — to power our statistics.
-          <a href="#" id="privacyLink2">Learn more</a>
+          We store anonymous test results to power our statistics. No account, no tracking.
+          <a id="privacyLink2">Read privacy policy</a>
         </span>
       </div>
     </section>
 
-    <!-- ============ TESTING SCREEN ============ -->
+    <!-- ===== TESTING SCREEN ===== -->
     <section id="testingScreen" class="screen">
       <div class="card testing-card">
         <div class="gauge-container">
-          <canvas id="gaugeCanvas" width="340" height="170"></canvas>
+          <canvas id="gaugeCanvas" width="360" height="180"></canvas>
           <div class="gauge-value">
             <span id="gaugeValue">0</span>
             <span class="gauge-unit">Mbps</span>
@@ -1382,25 +1416,41 @@
       </div>
     </section>
 
-    <!-- ============ RESULTS SCREEN ============ -->
+    <!-- ===== RESULTS SCREEN ===== -->
     <section id="resultsScreen" class="screen">
       <div class="card results-card">
         <h2>Your internet result</h2>
 
-        <div class="result-main">
-          <div class="result-download">
-            <span class="result-value" id="resultDownload">—</span>
-            <span class="result-unit">Mbps</span>
-            <span class="result-label">Download</span>
+        <!-- Download + Upload side by side -->
+        <div class="speed-showcase">
+          <div class="speed-block download">
+            <div class="speed-block-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 4v16M5 13l7 7 7-7"/>
+              </svg>
+            </div>
+            <span class="speed-block-value" id="resultDownload">—</span>
+            <span class="speed-block-unit">Mbps</span>
+            <span class="speed-block-label">Download</span>
           </div>
+
+          <div class="speed-block upload">
+            <div class="speed-block-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20V4M5 11l7-7 7 7"/>
+              </svg>
+            </div>
+            <span class="speed-block-value" id="resultUpload">—</span>
+            <span class="speed-block-unit">Mbps</span>
+            <span class="speed-block-label">Upload</span>
+          </div>
+        </div>
+
+        <div style="text-align:center">
           <div class="quality-badge" id="qualityBadge">—</div>
         </div>
 
         <div class="result-details">
-          <div class="detail-row">
-            <span>Upload</span>
-            <span id="resultUpload">— Mbps</span>
-          </div>
           <div class="detail-row">
             <span>Ping</span>
             <span id="resultPing">— ms</span>
@@ -1421,6 +1471,23 @@
 
         <div class="result-section">
           <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Your Location
+          </h3>
+          <div class="location-line">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+            </svg>
+            <span id="resultLocation">Detecting from IP…</span>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12.55a11 11 0 0 1 14 0"/>
               <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
@@ -1434,39 +1501,12 @@
             <span id="resultISP">—</span>
           </div>
           <div class="detail-row">
-            <span>IP</span>
+            <span>IP Address</span>
             <span id="resultIP">—</span>
           </div>
           <div class="detail-row">
             <span>Connection</span>
             <span id="resultConnection">—</span>
-          </div>
-        </div>
-
-        <div class="result-section">
-          <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-            Location
-          </h3>
-          <div class="detail-row">
-            <span id="resultLocation">—</span>
-          </div>
-        </div>
-
-        <div class="result-section">
-          <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2"/>
-              <line x1="8" y1="21" x2="16" y2="21"/>
-              <line x1="12" y1="17" x2="12" y2="21"/>
-            </svg>
-            Test Server
-          </h3>
-          <div class="detail-row">
-            <span id="resultServer">—</span>
           </div>
         </div>
 
@@ -1484,7 +1524,7 @@
         </div>
 
         <button id="testAgainBtn" class="btn primary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12a9 9 0 1 1-3-6.7L21 8"/>
             <path d="M21 3v5h-5"/>
           </svg>
@@ -1493,10 +1533,10 @@
       </div>
     </section>
 
-    <!-- ============ LOCAL HISTORY ============ -->
+    <!-- ===== LOCAL HISTORY ===== -->
     <section id="historySection" class="history-section">
       <h2>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="9"/>
           <path d="M12 7v5l3 2"/>
         </svg>
@@ -1506,9 +1546,7 @@
     </section>
   </main>
 
-  <!-- =========================================================
-       FOOTER
-       ========================================================= -->
+  <!-- ============ FOOTER ============ -->
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-brand">
@@ -1519,41 +1557,203 @@
       </div>
       <div class="footer-tag">Fast. Simple. Private.</div>
       <div class="footer-links">
-        <a href="#" id="privacyFooter">Privacy</a>
-        <a href="#" id="termsFooter">Terms</a>
+        <a id="aboutFooter">About</a>
+        <a id="privacyFooter">Privacy</a>
+        <a id="termsFooter">Terms</a>
+      </div>
+      <div class="footer-designed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+          <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+          <path d="M2 2l7.586 7.586"/>
+          <circle cx="11" cy="11" r="2"/>
+        </svg>
+        Designed by <b>Danish</b>
       </div>
       <div class="footer-copy">&copy; 2026 Internet Speed Test</div>
     </div>
   </footer>
 
-  <!-- =========================================================
-       LOCATION PERMISSION MODAL
-       ========================================================= -->
+  <!-- ============ LOCATION PERMISSION MODAL ============ -->
   <div id="locationModal" class="modal" hidden>
     <div class="modal-content">
       <div class="modal-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/>
           <circle cx="12" cy="10" r="3"/>
         </svg>
       </div>
       <h3>Improve your test results</h3>
       <p>
-        Allow location access to show your approximate test location and
-        nearby network information. Your exact coordinates are never shared.
+        Allow precise location access to record your test's coordinates.
+        If you decline, we'll still show your approximate location based on
+        your public IP address — no data is ever linked to you personally.
       </p>
       <div class="modal-actions">
         <button id="allowLocationBtn" class="btn primary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
-          Allow Location
+          Allow Precise Location
         </button>
-        <button id="denyLocationBtn" class="btn secondary">Continue Without</button>
+        <button id="denyLocationBtn" class="btn secondary">Use IP Location Instead</button>
       </div>
     </div>
   </div>
 
+  <!-- ============ ABOUT MODAL ============ -->
+  <div id="aboutModal" class="modal" hidden>
+    <div class="modal-content">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 16v-4M12 8h.01"/>
+        </svg>
+      </div>
+      <h3>About Internet Speed Test</h3>
+      <p>
+        A fast, private, no-account internet speed test that measures your real
+        connection quality in your browser.
+      </p>
+
+      <h4>What we measure</h4>
+      <ul>
+        <li>Download and upload throughput in Mbps</li>
+        <li>Ping (lowest latency) and jitter</li>
+        <li>Packet loss percentage</li>
+        <li>Test duration and time of day</li>
+      </ul>
+
+      <h4>How we do it</h4>
+      <ul>
+        <li>Tests run against Cloudflare's global edge network</li>
+        <li>Adaptive parallelism for accurate results on any speed</li>
+        <li>Warm-up trimmed to remove TCP slow-start bias</li>
+      </ul>
+
+      <h4>Privacy first</h4>
+      <ul>
+        <li>No account, no login, no ads</li>
+        <li>Anonymous results only — never linked to your identity</li>
+        <li>IP-derived location stored, precise location optional</li>
+      </ul>
+
+      <div class="modal-actions">
+        <button class="btn primary" data-close-modal>Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PRIVACY MODAL ============ -->
+  <div id="privacyModal" class="modal" hidden>
+    <div class="modal-content">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <h3>Privacy Policy</h3>
+      <p>
+        We collect the minimum amount of data needed to run a speed test and
+        keep our statistics meaningful. No accounts, no tracking pixels, no ad IDs.
+      </p>
+
+      <h4>What we store</h4>
+      <ul>
+        <li>Speed measurements (download, upload, ping, jitter, packet loss)</li>
+        <li>Approximate location from your IP (city, region, country)</li>
+        <li>Precise coordinates only if you grant geolocation permission</li>
+        <li>Network metadata: ISP, ASN, public IP</li>
+        <li>Device metadata: browser, OS, screen size, timezone, language</li>
+        <li>Test timestamp</li>
+      </ul>
+
+      <h4>What we never store</h4>
+      <ul>
+        <li>Your name, email, phone, or address</li>
+        <li>Any account credentials (we don't have accounts)</li>
+        <li>Browsing history or data from other sites</li>
+      </ul>
+
+      <h4>Cookies &amp; local storage</h4>
+      <ul>
+        <li>We use local storage to remember your theme and recent tests</li>
+        <li>We use a single cookie to remember your cookie-consent choice</li>
+        <li>No third-party advertising or tracking cookies</li>
+      </ul>
+
+      <h4>Where it goes</h4>
+      <ul>
+        <li>Test results are stored anonymously in our database</li>
+        <li>Speed measurements use Cloudflare's public test endpoints</li>
+        <li>IP lookups use ipapi.co for geo-enrichment</li>
+      </ul>
+
+      <div class="modal-actions">
+        <button class="btn primary" data-close-modal>I understand</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TERMS MODAL ============ -->
+  <div id="termsModal" class="modal" hidden>
+    <div class="modal-content">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+      </div>
+      <h3>Terms of Use</h3>
+      <p>
+        This service is provided as-is, for personal and diagnostic use.
+        Measurements are estimates and can vary depending on network conditions,
+        server load, and device performance.
+      </p>
+
+      <h4>Fair use</h4>
+      <ul>
+        <li>Do not abuse the API endpoints or attempt to overwhelm the service</li>
+        <li>Do not use automated scripts to submit fraudulent test results</li>
+        <li>Do not rely on results for legal, contractual, or billing claims</li>
+      </ul>
+
+      <h4>No warranty</h4>
+      <ul>
+        <li>Results are informational and may differ from your ISP's measurements</li>
+        <li>We are not responsible for decisions made based on the results</li>
+        <li>The service may be changed or discontinued at any time</li>
+      </ul>
+
+      <div class="modal-actions">
+        <button class="btn primary" data-close-modal>Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ COOKIE BANNER ============ -->
+  <div id="cookieBanner" class="cookie-banner" hidden>
+    <div class="cookie-banner-inner">
+      <div class="cookie-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-9-9 4 4 0 0 0 4 4 4 4 0 0 0 4 4 9 9 0 0 0 1 1z"/>
+          <circle cx="9" cy="9" r="1"/>
+          <circle cx="15" cy="15" r="1"/>
+          <circle cx="9" cy="15" r="1"/>
+        </svg>
+      </div>
+      <div class="cookie-text">
+        <strong>We use cookies &amp; local storage</strong>
+        To remember your theme, save your recent tests, and record your consent choice.
+        No advertising or tracking cookies — ever. <a id="cookieLearnMore">Learn more</a>.
+      </div>
+    </div>
+    <div class="cookie-actions">
+      <button id="cookieDecline" class="btn secondary">Decline</button>
+      <button id="cookieAccept" class="btn primary">Accept</button>
+    </div>
+  </div>
 
   <script src="app.js" type="module"></script>
 </body>

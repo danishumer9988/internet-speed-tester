@@ -3,25 +3,21 @@
 
 // ---------- Configuration ----------
 const PING_COUNT = 10;
-
-// Cloudflare's public speed test API — CORS-enabled, no API key.
 const CF_DOWN = 'https://speed.cloudflare.com/__down?bytes=';
 const CF_UP   = 'https://speed.cloudflare.com/__up';
-const TEST_SERVER = 'Cloudflare Edge Network';
 
 // Test phase parameters
-const TEST_DURATION_MS = 12000;   // hard cap per phase
-const WARMUP_MS        = 2000;    // discard first 2s (TCP slow start)
-const MIN_SAMPLES      = 8;       // need this many before early stop
-const STABLE_WINDOW    = 5;       // rolling window for stability check
-const STABLE_THRESHOLD = 0.08;    // stop when max/min spread < 8%
+const TEST_DURATION_MS = 12000;
+const WARMUP_MS        = 2000;
+const MIN_SAMPLES      = 8;
+const STABLE_WINDOW    = 5;
+const STABLE_THRESHOLD = 0.08;
 
-// Parallel connection policy (Ookla-style)
+// Thread policy
 const MIN_THREADS = 2;
 const MAX_THREADS = 4;
-const THREAD_SPEED_THRESHOLD_MBPS = 4; // if pre-test >= 4 Mbps, go to 4 threads
+const THREAD_SPEED_THRESHOLD_MBPS = 4;
 
-// Chunk size ladder (adaptive, based on current speed)
 function pickChunkSize(mbps) {
   if (mbps > 200) return 50 * 1024 * 1024;
   if (mbps > 50)  return 25 * 1024 * 1024;
@@ -76,9 +72,13 @@ const resultISP = $('resultISP');
 const resultIP = $('resultIP');
 const resultConnection = $('resultConnection');
 const resultLocation = $('resultLocation');
-const resultServer = $('resultServer');
 const resultDevice = $('resultDevice');
 const qualityBadge = $('qualityBadge');
+
+const aboutModal = $('aboutModal');
+const privacyModal = $('privacyModal');
+const termsModal = $('termsModal');
+const cookieBanner = $('cookieBanner');
 
 // ---------- Theme ----------
 function applyTheme(t) {
@@ -95,6 +95,33 @@ function showScreen(s) {
   [startScreen, testingScreen, resultsScreen].forEach(x => x.classList.remove('active'));
   s.classList.add('active');
 }
+
+// ---------- Modals ----------
+function showModal(el) { el.hidden = false; }
+function hideModal(el) { el.hidden = true; }
+
+document.querySelectorAll('[data-close-modal]').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    hideModal(e.target.closest('.modal'));
+  });
+});
+
+// Close modal when clicking outside content
+[aboutModal, privacyModal, termsModal, locationModal].forEach(m => {
+  if (!m) return;
+  m.addEventListener('click', (e) => {
+    if (e.target === m) hideModal(m);
+  });
+});
+
+// Escape key closes modals
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    [aboutModal, privacyModal, termsModal, locationModal].forEach(m => {
+      if (m && !m.hidden) hideModal(m);
+    });
+  }
+});
 
 // ---------- Location ----------
 function showLocationModal() { locationModal.hidden = false; }
@@ -124,26 +151,43 @@ async function requestLocation() {
   });
 }
 
-async function initLocation() {
-  if (state.locationPermission === 'granted') {
-    const loc = await requestLocation();
-    locationStatus.textContent = loc
-      ? `${loc.latitude.toFixed(3)}, ${loc.longitude.toFixed(3)}`
-      : 'Not available';
+// Build a human-readable location string. Prefer IP-based location
+// since it works regardless of permission, then append "Precise" if granted.
+function updateLocationDisplay() {
+  const info = state.networkInfo;
+  const ipParts = [info?.city, info?.region, info?.country].filter(Boolean);
+  const ipLoc = ipParts.length ? ipParts.join(', ') : null;
+
+  if (state.location) {
+    locationStatus.textContent = ipLoc
+      ? `${ipLoc} (precise)`
+      : `${state.location.latitude.toFixed(2)}, ${state.location.longitude.toFixed(2)}`;
+  } else if (ipLoc) {
+    locationStatus.textContent = ipLoc;
   } else {
-    locationStatus.textContent = 'Not provided';
+    locationStatus.textContent = 'Detecting…';
   }
+}
+
+async function initLocation() {
+  // IP-based location (from network info) always shown.
+  // Precise location only requested if user previously allowed.
+  if (state.locationPermission === 'granted') {
+    await requestLocation();
+  }
+  updateLocationDisplay();
 }
 
 // ---------- Network info ----------
 async function fetchNetworkInfo() {
   try {
-    networkStatus.textContent = 'Detecting...';
+    networkStatus.textContent = 'Detecting…';
     const res = await fetch('/api/network-info');
     if (!res.ok) throw new Error('bad status');
     const data = await res.json();
     state.networkInfo = data;
     networkStatus.textContent = data.isp || data.city || 'Unknown';
+    updateLocationDisplay();
     return data;
   } catch (err) {
     console.warn('Network info error:', err);
@@ -221,10 +265,6 @@ function drawGauge(value, max = 1000) {
 }
 
 // ---------- Statistics helpers ----------
-
-// Trim outliers the way Ookla does on the HTTP path:
-// sort samples by speed, drop the top slice and the bottom slice,
-// average the remainder.
 function trimAndAverage(samples, dropTopFrac = 0.10, dropBottomFrac = 0.25) {
   if (samples.length < 6) {
     return samples.reduce((a, b) => a + b, 0) / Math.max(samples.length, 1);
@@ -236,8 +276,6 @@ function trimAndAverage(samples, dropTopFrac = 0.10, dropBottomFrac = 0.25) {
   return kept.reduce((a, b) => a + b, 0) / kept.length;
 }
 
-// Stability check — how spread is the rolling window?
-// If max/min are within threshold, we can stop early.
 function isStable(samples) {
   if (samples.length < STABLE_WINDOW) return false;
   const recent = samples.slice(-STABLE_WINDOW);
@@ -248,7 +286,6 @@ function isStable(samples) {
   return (max - min) / avg < STABLE_THRESHOLD;
 }
 
-// Take a quick pre-test sample to decide how many threads to use.
 async function preTestDownload() {
   try {
     const start = performance.now();
@@ -267,7 +304,6 @@ async function measurePing() {
   const pings = [];
   let failed = 0;
 
-  // Warm-up (not counted)
   try {
     await fetch(`${CF_DOWN}1000&w=${Math.random()}`, { cache: 'no-store' });
   } catch {}
@@ -287,7 +323,6 @@ async function measurePing() {
 
   if (pings.length === 0) throw new Error('All ping attempts failed');
 
-  // Ookla uses the MINIMUM ping, not the average.
   const minPing = Math.min(...pings);
 
   let jitterSum = 0;
@@ -304,23 +339,20 @@ async function measurePing() {
 
 // ---------- Download ----------
 async function measureDownload() {
-  phaseText.textContent = 'Pre-testing connection...';
-
-  // Step 1: pre-test to decide thread count
+  phaseText.textContent = 'Pre-testing connection…';
   const preSpeed = await preTestDownload();
   const threads = preSpeed >= THREAD_SPEED_THRESHOLD_MBPS ? MAX_THREADS : MIN_THREADS;
   console.log(`Pre-test: ${preSpeed.toFixed(1)} Mbps → using ${threads} threads`);
 
-  phaseText.textContent = 'Testing download...';
+  phaseText.textContent = 'Testing download…';
 
   const startTime = performance.now();
   const controller = new AbortController();
   let active = true;
   let totalBytes = 0;
   let currentChunk = pickChunkSize(preSpeed);
-  const samples = []; // rolling window of instantaneous speeds
+  const samples = [];
 
-  // Sampler: every 250 ms, compute instantaneous speed over the interval
   let lastTime = startTime;
   let lastBytes = 0;
   const sampler = setInterval(() => {
@@ -337,7 +369,8 @@ async function measureDownload() {
 
       const elapsed = now - startTime;
       if (elapsed > WARMUP_MS) {
-        drawGauge(inst, Math.max(1000, Math.ceil(inst * 1.2 / 100) * 100));
+        const gaugeMax = Math.max(1000, Math.ceil(inst * 1.2 / 100) * 100);
+        drawGauge(inst, gaugeMax);
         downloadValue.textContent = inst.toFixed(1);
       }
     }
@@ -345,7 +378,6 @@ async function measureDownload() {
     const elapsed = now - startTime;
     progressFill.style.width = Math.min(20 + (elapsed / TEST_DURATION_MS) * 40, 60) + '%';
 
-    // Dynamic stop: enough samples, past warm-up, and stable
     if (elapsed > WARMUP_MS + 2000 &&
         samples.length >= MIN_SAMPLES &&
         isStable(samples)) {
@@ -381,20 +413,19 @@ async function measureDownload() {
   await Promise.allSettled(workers);
   clearInterval(sampler);
 
-  // Step 2: discard warm-up samples, then trim outliers
   const postWarmup = samples.filter((_, i) => i >= Math.floor(WARMUP_MS / 250));
   const finalSpeed = trimAndAverage(postWarmup);
 
-  drawGauge(finalSpeed, Math.max(1000, Math.ceil(finalSpeed * 1.2 / 100) * 100));
+  const gaugeMax = Math.max(1000, Math.ceil(finalSpeed * 1.2 / 100) * 100);
+  drawGauge(finalSpeed, gaugeMax);
   downloadValue.textContent = finalSpeed.toFixed(1);
   return { speedMbps: finalSpeed, duration: (performance.now() - startTime) / 1000 };
 }
 
 // ---------- Upload ----------
 async function measureUpload() {
-  phaseText.textContent = 'Testing upload...';
+  phaseText.textContent = 'Testing upload…';
 
-  // Same thread policy: use pre-test speed from download phase (passed via global).
   const threads = window.__lastDownloadMbps >= THREAD_SPEED_THRESHOLD_MBPS ? MAX_THREADS : MIN_THREADS;
 
   const startTime = performance.now();
@@ -416,12 +447,12 @@ async function measureUpload() {
     if (dt > 0.2 && dBytes > 0) {
       const inst = (dBytes * 8) / dt / 1e6;
       samples.push(inst);
-      // Upload chunks are smaller — a quarter of the download chunk.
       currentChunk = Math.max(512 * 1024, Math.floor(pickChunkSize(inst) / 4));
 
       const elapsed = now - startTime;
       if (elapsed > WARMUP_MS) {
-        drawGauge(inst, Math.max(1000, Math.ceil(inst * 1.2 / 100) * 100));
+        const gaugeMax = Math.max(1000, Math.ceil(inst * 1.2 / 100) * 100);
+        drawGauge(inst, gaugeMax);
         uploadValue.textContent = inst.toFixed(1);
       }
     }
@@ -449,7 +480,6 @@ async function measureUpload() {
 
       const doUpload = () => {
         if (!active) return resolve();
-
         chunkSizeThisRound = currentChunk;
         sentThisRound = 0;
         const blob = makePayload(chunkSizeThisRound);
@@ -467,7 +497,6 @@ async function measureUpload() {
         };
 
         xhr.onload = () => {
-          // Account for any bytes not reported by progress events
           if (sentThisRound < chunkSizeThisRound) {
             totalBytes += chunkSizeThisRound - sentThisRound;
           }
@@ -493,7 +522,8 @@ async function measureUpload() {
   const postWarmup = samples.filter((_, i) => i >= Math.floor(WARMUP_MS / 250));
   const finalSpeed = trimAndAverage(postWarmup);
 
-  drawGauge(finalSpeed, Math.max(1000, Math.ceil(finalSpeed * 1.2 / 100) * 100));
+  const gaugeMax = Math.max(1000, Math.ceil(finalSpeed * 1.2 / 100) * 100);
+  drawGauge(finalSpeed, gaugeMax);
   uploadValue.textContent = finalSpeed.toFixed(1);
   return { speedMbps: finalSpeed, duration: (performance.now() - startTime) / 1000 };
 }
@@ -580,12 +610,12 @@ async function runTest() {
   const start = performance.now();
 
   try {
-    phaseText.textContent = 'Connecting...';
+    phaseText.textContent = 'Connecting…';
     await new Promise(r => setTimeout(r, 400));
 
     if (!state.networkInfo) await fetchNetworkInfo();
 
-    phaseText.textContent = 'Testing latency...';
+    phaseText.textContent = 'Testing latency…';
     const pingResults = await measurePing();
     progressFill.style.width = '20%';
 
@@ -596,12 +626,13 @@ async function runTest() {
     const ul = await measureUpload();
     progressFill.style.width = '90%';
 
-    phaseText.textContent = 'Calculating...';
+    phaseText.textContent = 'Calculating…';
     await new Promise(r => setTimeout(r, 400));
 
     const duration = (performance.now() - start) / 1000;
     progressFill.style.width = '100%';
 
+    // Prefer IP-based location. Precise location is optional.
     const results = {
       download_speed: dl.speedMbps,
       upload_speed: ul.speedMbps,
@@ -626,12 +657,12 @@ async function runTest() {
       timezone: state.deviceInfo?.timezone || null,
       screen_width: state.deviceInfo?.screenWidth || null,
       screen_height: state.deviceInfo?.screenHeight || null,
-      test_server: TEST_SERVER,
+      test_server: 'Cloudflare Edge Network',
     };
 
     state.testResults = results;
 
-    phaseText.textContent = 'Saving results...';
+    phaseText.textContent = 'Saving results…';
     await saveTestResult(results);
     saveLocalHistory(results);
     displayResults(results);
@@ -651,7 +682,7 @@ async function runTest() {
 
 function displayResults(r) {
   resultDownload.textContent = r.download_speed.toFixed(1);
-  resultUpload.textContent = r.upload_speed.toFixed(1) + ' Mbps';
+  resultUpload.textContent = r.upload_speed.toFixed(1);
   resultPing.textContent = r.ping.toFixed(0) + ' ms';
   resultJitter.textContent = r.jitter.toFixed(0) + ' ms';
   resultPacketLoss.textContent = r.packet_loss.toFixed(1) + ' %';
@@ -661,9 +692,19 @@ function displayResults(r) {
   resultIP.textContent = r.public_ip || 'Not available';
   resultConnection.textContent = r.connection_type || 'Not available';
 
-  const loc = [r.city, r.region, r.country].filter(Boolean);
-  resultLocation.textContent = loc.length ? loc.join(', ') : 'Not provided';
-  resultServer.textContent = r.test_server || 'Cloudflare Edge Network';
+  // Location line: IP-based always, precise if granted.
+  const ipParts = [r.city, r.region, r.country].filter(Boolean);
+  const ipLoc = ipParts.length ? ipParts.join(', ') : null;
+
+  let locText = 'Location unavailable';
+  if (ipLoc && r.latitude != null && r.longitude != null) {
+    locText = `${ipLoc} — precise: ${r.latitude.toFixed(3)}, ${r.longitude.toFixed(3)}`;
+  } else if (ipLoc) {
+    locText = `${ipLoc} (approximate, from IP)`;
+  } else if (r.latitude != null && r.longitude != null) {
+    locText = `Precise: ${r.latitude.toFixed(3)}, ${r.longitude.toFixed(3)}`;
+  }
+  resultLocation.textContent = locText;
 
   const dev = [r.operating_system, r.browser].filter(Boolean);
   resultDevice.textContent = dev.length ? dev.join(' / ') : 'Not available';
@@ -675,16 +716,17 @@ function displayResults(r) {
 
 // ---------- Events ----------
 startBtn.addEventListener('click', async () => {
-  if (!state.locationPermission) { showLocationModal(); return; }
+  if (!state.locationPermission) {
+    showLocationModal();
+    return;
+  }
   await runTest();
 });
 
 allowLocationBtn.addEventListener('click', async () => {
   hideLocationModal();
   await requestLocation();
-  locationStatus.textContent = state.location
-    ? `${state.location.latitude.toFixed(3)}, ${state.location.longitude.toFixed(3)}`
-    : 'Not provided';
+  updateLocationDisplay();
   await runTest();
 });
 
@@ -692,38 +734,55 @@ denyLocationBtn.addEventListener('click', async () => {
   hideLocationModal();
   localStorage.setItem('locationPermission', 'denied');
   state.locationPermission = 'denied';
-  locationStatus.textContent = 'Not provided';
+  updateLocationDisplay();
   await runTest();
 });
 
 testAgainBtn.addEventListener('click', () => {
   showScreen(startScreen);
-  locationStatus.textContent = state.location
-    ? `${state.location.latitude.toFixed(3)}, ${state.location.longitude.toFixed(3)}`
-    : 'Not provided';
+  updateLocationDisplay();
   networkStatus.textContent = state.networkInfo?.isp || state.networkInfo?.city || 'Unknown';
 });
 
-document.querySelectorAll('#privacyLink, #privacyLink2, #privacyFooter').forEach(el => {
-  el.addEventListener('click', (e) => {
-    e.preventDefault();
-    alert('Privacy Notice:\n\nThis app records anonymous test results including speed measurements, approximate location, network/ISP information, device/browser information, and test timestamp. No personal information is collected.');
-  });
+// Wire up nav / footer links
+$('aboutLink')?.addEventListener('click', () => showModal(aboutModal));
+$('aboutFooter')?.addEventListener('click', () => showModal(aboutModal));
+$('privacyLink')?.addEventListener('click', () => showModal(privacyModal));
+$('privacyLink2')?.addEventListener('click', () => showModal(privacyModal));
+$('privacyFooter')?.addEventListener('click', () => showModal(privacyModal));
+$('termsFooter')?.addEventListener('click', () => showModal(termsModal));
+$('cookieLearnMore')?.addEventListener('click', () => showModal(privacyModal));
+
+// ---------- Cookie consent ----------
+function initCookies() {
+  const choice = localStorage.getItem('cookieConsent');
+  if (!choice) {
+    setTimeout(() => { cookieBanner.hidden = false; }, 800);
+  }
+}
+
+$('cookieAccept')?.addEventListener('click', () => {
+  localStorage.setItem('cookieConsent', 'accepted');
+  document.cookie = 'cookieConsent=accepted; max-age=' + (60 * 60 * 24 * 365) + '; path=/; SameSite=Lax';
+  cookieBanner.hidden = true;
 });
 
-document.querySelectorAll('#aboutLink, #termsFooter').forEach(el => {
-  el.addEventListener('click', (e) => {
-    e.preventDefault();
-    alert('Internet Speed Test PWA\n\nA professional, privacy-conscious speed test tool. Built with vanilla JavaScript, Express, and SQLite/PostgreSQL.');
-  });
+$('cookieDecline')?.addEventListener('click', () => {
+  localStorage.setItem('cookieConsent', 'declined');
+  document.cookie = 'cookieConsent=declined; max-age=' + (60 * 60 * 24 * 365) + '; path=/; SameSite=Lax';
+  cookieBanner.hidden = true;
 });
 
 // ---------- Init ----------
 async function init() {
   state.deviceInfo = getDeviceInfo();
   renderHistory();
-  await initLocation();
+  initCookies();
+
+  // Fetch IP info first (this gives us location even without permission),
+  // then check for stored precise-location permission.
   await fetchNetworkInfo();
+  await initLocation();
   drawGauge(0, 1000);
 
   if ('serviceWorker' in navigator) {
